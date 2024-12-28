@@ -1,11 +1,14 @@
 const express = require("express");
+const app = express();
+
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
-const app = express();
-
 const categoryRouter = require("./app/api/v1/category/router");
+
+const routeNotFound = require("./middlewares/route-not-found");
+const errorHandler = require("./middlewares/error-handler");
 
 const v1 = "/api/v1";
 
@@ -21,6 +24,11 @@ app.get("/", (req, res) => {
   });
 });
 
+// Routes
 app.use(v1, categoryRouter);
+
+// Middlewares
+app.use(routeNotFound);
+app.use(errorHandler);
 
 module.exports = app;
