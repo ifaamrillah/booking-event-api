@@ -1,13 +1,22 @@
-const Category = require("./model");
+const { StatusCodes } = require("http-status-codes");
+
+const BadRequestError = require("../../../errors/bad-request");
+const {
+  getAllCategory,
+  getCategoryById,
+  createCategory,
+  updateCategoryById,
+  deleteCategoryById,
+} = require("../../../services/mongoose/category");
 
 const create = async (req, res, next) => {
   try {
     const { name } = req.body;
 
-    const createCategory = await Category.create({ name });
+    const addNew = await createCategory({ name });
 
-    res.status(201).json({
-      data: createCategory,
+    res.status(StatusCodes.CREATED).json({
+      data: addNew,
     });
   } catch (error) {
     next(error);
@@ -16,10 +25,10 @@ const create = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
-    const getAllCategory = await Category.find();
+    const findAll = await getAllCategory();
 
-    res.status(200).json({
-      data: getAllCategory,
+    res.status(StatusCodes.OK).json({
+      data: findAll,
     });
   } catch (error) {
     next(error);
@@ -30,16 +39,11 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const getCategoryById = await Category.findById(id);
-
-    if (!getCategoryById) {
-      return res.status(404).json({
-        message: "Category not found",
-      });
-    }
+    const findId = await getCategoryById(id);
+    if (!findId) throw new BadRequestError("Category not found");
 
     res.status(200).json({
-      data: getCategoryById,
+      data: findId,
     });
   } catch (error) {
     next(error);
@@ -51,21 +55,10 @@ const updateById = async (req, res, next) => {
     const { id } = req.params;
     const { name } = req.body;
 
-    const existingCategory = await Category.findById(id);
-    if (!existingCategory) {
-      return res.status(404).json({
-        message: "Category not found",
-      });
-    }
+    const editById = await updateCategoryById(id, { name });
 
-    const updateCategoryById = await Category.findByIdAndUpdate(
-      existingCategory._id,
-      { name },
-      { new: true }
-    );
-
-    res.status(200).json({
-      data: updateCategoryById,
+    res.status(StatusCodes.OK).json({
+      data: editById,
     });
   } catch (error) {
     next(error);
@@ -76,20 +69,10 @@ const deleteById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const existingCategory = await Category.findById(id);
-    if (!existingCategory) {
-      return res.status(404).json({
-        message: "Category not found",
-      });
-    }
+    const removeById = await deleteCategoryById(id);
 
-    const deleteCategoryById = await Category.findByIdAndDelete(
-      existingCategory._id,
-      { new: true }
-    );
-
-    res.status(200).json({
-      data: deleteCategoryById,
+    res.status(StatusCodes.OK).json({
+      data: removeById,
     });
   } catch (error) {
     next(error);
