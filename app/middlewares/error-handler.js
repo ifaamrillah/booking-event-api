@@ -28,11 +28,4 @@ const errorHandler = (err, req, res, next) => {
   return res.status(customError.statusCode).json({ msg: customError.msg });
 };
 
-const routeNotFound = (req, res) => {
-  return res.status(StatusCodes.NOT_FOUND).json({ msg: "Route not found" });
-};
-
-module.exports = {
-  errorHandler,
-  routeNotFound,
-};
+module.exports = errorHandler;

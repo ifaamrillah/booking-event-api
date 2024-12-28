@@ -7,8 +7,8 @@ const logger = require("morgan");
 
 const categoryRouter = require("./app/api/v1/category/router");
 
-const routeNotFound = require("./middlewares/route-not-found");
-const errorHandler = require("./middlewares/error-handler");
+const routeNotFound = require("./app/middlewares/route-not-found");
+const errorHandler = require("./app/middlewares/error-handler");
 
 const v1 = "/api/v1";
 
