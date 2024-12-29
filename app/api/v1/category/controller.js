@@ -1,9 +1,10 @@
 const { StatusCodes } = require("http-status-codes");
-
 const BadRequestError = require("../../../errors/bad-request");
+const NotFoundError = require("../../../errors/not-found");
 const {
   getAllCategory,
   getCategoryById,
+  getCategoryByName,
   createCategory,
   updateCategoryById,
   deleteCategoryById,
@@ -12,6 +13,10 @@ const {
 const create = async (req, res, next) => {
   try {
     const { name } = req.body;
+
+    // Check category name is unique
+    const findName = await getCategoryByName(name);
+    if (findName) throw new BadRequestError("Category already exists");
 
     const addNew = await createCategory({ name });
 
@@ -39,8 +44,9 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
+    // Check id is valid
     const findId = await getCategoryById(id);
-    if (!findId) throw new BadRequestError("Category not found");
+    if (!findId) throw new NotFoundError("Category not found");
 
     res.status(200).json({
       data: findId,
@@ -55,6 +61,14 @@ const updateById = async (req, res, next) => {
     const { id } = req.params;
     const { name } = req.body;
 
+    // Check existing category
+    const findId = await getCategoryById(id);
+    if (!findId) throw new NotFoundError("Category not found");
+
+    // Check category name is unique
+    const findName = await getCategoryByName(name);
+    if (findName) throw new BadRequestError("Category already exists");
+
     const editById = await updateCategoryById(id, { name });
 
     res.status(StatusCodes.OK).json({
@@ -68,6 +82,10 @@ const updateById = async (req, res, next) => {
 const deleteById = async (req, res, next) => {
   try {
     const { id } = req.params;
+
+    // Check existing category
+    const findId = await getCategoryById(id);
+    if (!findId) throw new NotFoundError("Category not found");
 
     const removeById = await deleteCategoryById(id);
 
