@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
 const categoryRouter = require("./app/api/v1/category/router");
+const talentRouter = require("./app/api/v1/talent/router");
 
 const routeNotFound = require("./app/middlewares/route-not-found");
 const errorHandler = require("./app/middlewares/error-handler");
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 
 // Routes
 app.use(v1, categoryRouter);
+app.use(v1, talentRouter);
 
 // Middlewares
 app.use(routeNotFound);
